@@ -6,10 +6,10 @@ import copy
 import numpy as np
 import gym
 
-from odium.envs.fetch.push_among_obstacles import FetchPushAmongObstaclesEnv
+#from odium.envs.fetch.push_among_obstacles import FetchPushAmongObstaclesEnv
 
 
-def get_env(env_name, discrete, reward_type, env_id=None):
+def get_env(env_name, discrete,reward_type, cfg, env_id=None):
     if env_name == 'FetchPushAmongObstacles-v1':
         # Custom defined env
         env = FetchPushAmongObstaclesEnv(env_id=env_id,
@@ -18,18 +18,17 @@ def get_env(env_name, discrete, reward_type, env_id=None):
 
     else:
         # Gym env
-        assert env_id is None, "Env ID not defined for gym environments"
-        assert not discrete, "Discrete option not defined for gym environments"
-        raise NotImplementedError("Not implemented for gym environments")
-        env = gym.make(env_name, reward_type=reward_type)
+        #assert not discrete, "Discrete option not defined for gym environments"
+        #raise NotImplementedError("Not implemented for gym environments")
+        env = gym.make(env_name, cfg=cfg)
 
     return env
 
 
 class WrapperEnv(gym.Env):
 
-    def __init__(self, env_name, env_id, discrete, reward_type):
-        self.env = get_env(env_name, discrete, reward_type, env_id)
+    def __init__(self, env_name, env_id, discrete, reward_type, cfg):
+        self.env = get_env(env_name, discrete, reward_type, cfg, env_id)
         if discrete:
             self.discrete_actions = self.env.discrete_actions
             self.num_discrete_actions = self.env.num_discrete_actions
@@ -43,14 +42,14 @@ class WrapperEnv(gym.Env):
 
     def step(self, action):
         obs, rew, done, info = self.env.step(action)
-        sim_state = copy.deepcopy(self.env.sim.get_state())
-        obs['sim_state'] = sim_state
+        #sim_state = copy.deepcopy(self.env.sim.get_state())
+        #obs['sim_state'] = None #sim_state
         return obs, rew, done, info
 
     def reset(self):
         obs = self.env.reset()
-        sim_state = copy.deepcopy(self.env.sim.get_state())
-        obs['sim_state'] = sim_state
+        #sim_state = copy.deepcopy(self.env._compute_obs(None))
+        #obs['sim_state'] = None #sim_state
         return obs
 
     def seed(self, seed):
@@ -78,5 +77,5 @@ class WrapperEnv(gym.Env):
         return obs
 
 
-def get_wrapper_env(env_name, env_id, discrete, reward_type):
-    return WrapperEnv(env_name, env_id, discrete, reward_type)
+def get_wrapper_env(env_name, env_id, discrete, reward_type, cfg):
+    return WrapperEnv(env_name, env_id, discrete, reward_type, cfg)

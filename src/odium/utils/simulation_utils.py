@@ -1,7 +1,7 @@
 import copy
 import numpy as np
 
-from gym.envs.robotics.utils import reset_mocap2body_xpos
+#from gym.envs.robotics.utils import reset_mocap2body_xpos
 
 
 def set_object_position_in_sim(env, new_object_pos):

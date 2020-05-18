@@ -3,28 +3,20 @@ import heapq
 
 
 class Node:
-    def __init__(self, obs):
-        self.obs = obs
+    def __init__(self, simple_state):
+        self.simple_state = simple_state
         self._g = None
         self._h = None
         self._came_from = None
         self._action = None
 
     def __eq__(self, other):
-        if isinstance(self.obs, dict):
-            if np.array_equal(self.obs['observation'], other.obs['observation']):
-                return True
-            return False
-        else:
-            if np.array_equal(self.obs, other.obs):
-                return True
-            return False
+        if np.array_equal(self.simple_state, other.simple_state):
+            return True
+        return False
 
     def __hash__(self):
-        if isinstance(self.obs, dict):
-            return hash(tuple(self.obs['observation']))
-        else:
-            return hash(tuple(self.obs))
+            return hash(tuple(self.simple_state))
 
 
 class Astar:
@@ -117,14 +109,11 @@ class Astar:
         return best_action, info
 
     def get_best_action(self, start_node, best_node):
-        if start_node == best_node:
-            # TODO: Remove this hack. This is only true for fetch expts and not for any others
-            return (0., 0., 0., 0.), [start_node.obs]
         node = best_node._came_from
         action = best_node._action
-        path = [best_node.obs]
+        path = [best_node.simple_state]
         while True:
-            path.append(node.obs)
+            path.append(node.simple_state)
             if hasattr(node, '_came_from'):
                 # Not the start node
                 next_node = node._came_from
@@ -138,6 +127,6 @@ class Astar:
                 # Start node
                 break
 
-        path.append(start_node.obs)
+        path.append(start_node.simple_state)
         path = path[::-1]
         return action, path
