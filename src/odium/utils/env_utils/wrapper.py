@@ -20,7 +20,7 @@ def get_env(env_name, discrete,reward_type, cfg, env_id=None):
         # Gym env
         #assert not discrete, "Discrete option not defined for gym environments"
         #raise NotImplementedError("Not implemented for gym environments")
-        env = gym.make(env_name, cfg=cfg)
+        env = gym.make(env_name, cfg=cfg, n_inter_steps = cfg["env"]["n_inter_steps"])
 
     return env
 
